@@ -131,8 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                Padding(
-                  
+                Padding( 
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
                   child: Center(
@@ -155,14 +154,18 @@ class _LoginPageState extends State<LoginPage> {
                           }
                         },
                         child: Center(
-                          
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               IconButton(
                                 icon: new Icon(MdiIcons.google),
                                 style: const ButtonStyle( ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => TasksPage()),
+                                );
+                                },
                               ),
                               const Text(
                                 "Google",

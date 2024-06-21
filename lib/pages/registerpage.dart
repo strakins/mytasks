@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:tasklist/pages/taskspage.dart';
 
-class RegisterPage extends StatefulWidget {
+
+class RegisterPage extends StatefulWidget { 
   const RegisterPage({super.key});
 
   @override
@@ -81,24 +83,60 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                 ),
-                Padding(
+              Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
+                      const EdgeInsets.symmetric(horizontal: 0, vertical: 16.0),
                   child: Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Navigate the user to the Home page
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Please fill input')),
-                          );
-                        }
-                      },
-                      child: const Text('Register'),
+                    child: SizedBox(
+                      width: 320,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 27, 133, 151))),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            // Navigate the user to the Home page
+                            Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => TasksPage()),
+                                );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Please fill input')),
+                            );
+                          }
+                        },
+                        child: const Text(
+                          'Sign-up',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ),
                   ),
                 ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(70, 0, 0, 0),
+            child: Row(
+              children: [
+                const Text(
+                  "Already have an account?",
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+                ),
+                OutlinedButton(  
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RegisterPage()),
+                    );
+                  }, 
+                  child: Text(
+                    "Login",
+                    style: TextStyle(color: Color.fromARGB(255, 18, 156, 180)),
+                  ),
+                  style: OutlinedButton.styleFrom( side: BorderSide.none,),
+                ),
+              ],
+            ),
+          ),
                 
                 const Padding(
                   padding:
@@ -108,31 +146,54 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
 
-                Padding(
-                  
+                Padding( 
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
                   child: Center(
-                    
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Navigate the user to the Home page
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Please fill input')),
-                          );
-                        }
-                      },
-                      child: IconButton(
-                        icon: new Icon(MdiIcons.google),
-                        style: ButtonStyle(),
-                        onPressed: () {},
+                    child: SizedBox(
+                      width: 320,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 27, 133, 151))),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            // Navigate the user to the Home page
+                            Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => TasksPage()),
+                                );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Please fill input')),
+                            );
+                          }
+                        },
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: new Icon(MdiIcons.google),
+                                style: const ButtonStyle( ),
+                                onPressed: () {
+                                  Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => TasksPage()),
+                                );
+                                },
+                              ),
+                              const Text(
+                                "Google",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-
+                
               ],
             ),
           ),
