@@ -1,55 +1,55 @@
+// taskwidget_card.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:get/get.dart';
-import 'package:tasklist/controllers/task_controller.dart';
+import 'package:tasklist/models/task_model.dart';
 
 class TaskCard extends StatelessWidget {
-  final int index;
+  final Task task;
+  final ValueChanged<bool?> onChanged;
+  final VoidCallback onDelete;
+  final VoidCallback onEdit;
 
-  TaskCard({
+  const TaskCard({
+    required this.task,
+    required this.onChanged,
+    required this.onDelete,
+    required this.onEdit,
     Key? key,
-    required this.index,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final TaskController controller = Get.find();
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-      child: Slidable(
-        endActionPane: ActionPane(
-          motion: StretchMotion(),
+    return Card(
+      margin: const EdgeInsets.all(8.0),
+      child: ListTile(
+        title: Text(task.title),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SlidableAction(
-              onPressed: (context) => controller.deleteTask(index),
-              icon: Icons.delete_forever_outlined,
-              backgroundColor: Colors.red,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            SlidableAction(
-              onPressed: (context) => controller.updateTask(index),
-              icon: Icons.edit,
-              backgroundColor: Colors.blue,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
+            Text(task.description),
+            Text('${task.creationDate.day} - ${task.creationDate.month} - ${task.creationDate.year}'),
           ],
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: ListTile(
-            leading: Obx(() => Checkbox(
-              value: controller.taskList[index]['completed'],
-              onChanged: (value) => controller.taskCompleted(index),
-              activeColor: const Color.fromARGB(255, 222, 51, 39),
-            )),
-            title: Obx(() => Text(controller.taskList[index]['name'])),
-          ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Checkbox(
+              value: task.isCompleted,
+              onChanged: onChanged,
+            ),
+            IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: onEdit,
+            ),
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: onDelete,
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
+
+

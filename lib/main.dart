@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Favorite Media',
+      title: 'Daily Task Checklist',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         textTheme: GoogleFonts.acmeTextTheme(),

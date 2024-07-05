@@ -1,53 +1,48 @@
+// dialogue_widget.dart
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:tasklist/components/dialogue_button.dart';
 
 class DialogWidget extends StatelessWidget {
-  final VoidCallback onSave, onCancel;
-  final TextEditingController controller;
+  final TextEditingController titleController;
+  final TextEditingController descriptionController;
+  final VoidCallback onSave;
+  final VoidCallback onCancel;
 
   const DialogWidget({
-    Key? key,
+    required this.titleController,
+    required this.descriptionController,
     required this.onSave,
     required this.onCancel,
-    required this.controller,
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
-      content: SizedBox(
-        height: 120,
-        child: Column(
-          children: [
-            TextField(
-              controller: controller,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Add a Task",
-                hintStyle: TextStyle(color: Color.fromARGB(255, 12, 12, 12)),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                DialogButton(
-                  buttonName: "Create",
-                  onPressed: onSave,
-                ),
-                const SizedBox(
-                  width: 8.0,
-                ),
-                DialogButton(
-                  buttonName: "Cancel",
-                  onPressed: onCancel,
-                ),
-              ],
-            ),
-          ],
-        ),
+      title: const Text('Add Task'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: titleController,
+            decoration: const InputDecoration(labelText: 'Title'),
+          ),
+          TextField(
+            controller: descriptionController,
+            decoration: const InputDecoration(labelText: 'Description'),
+          ),
+        ],
       ),
+      actions: [
+        TextButton(
+          onPressed: onCancel,
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: onSave,
+          child: const Text('Save'),
+        ),
+      ],
     );
   }
 }
+
