@@ -1,61 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tasklist/controllers/task_controller.dart';
 import 'package:tasklist/components/dialogue_widget.dart';
 import 'package:tasklist/components/taskwidget_card.dart';
+import 'package:tasklist/models/task_model.dart';
 
-class TasksPage extends StatefulWidget {
-  const TasksPage({super.key});
 
-  @override
-  State<TasksPage> createState() => _TasksPageState();
-}
 
-class _TasksPageState extends State<TasksPage> {
-  final _controller = TextEditingController();
-  List taskList = [
-    ["Visit the Mall", false],
-    ["Complete KodeCamp Task 3", true],
-    ["Go for driving class", false],
-  ];
+class TasksPage extends StatelessWidget {
+  TasksPage({super.key});
 
-  int get totalTasks => taskList.length;
-  int get completedTasks => taskList.where((task) => task[1] == true).length;
+  final TaskController _taskController = Get.put(TaskController());
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
-  void taskCompleted(bool? value, int index) {
-    setState(() {
-      taskList[index][1] = !taskList[index][1];
-    });
+  void saveTask(BuildContext context) {
+    _taskController.addTask(
+      Task(
+        title: _titleController.text,
+        description: _descriptionController.text,
+        creationDate: DateTime.now().toLocal(),
+      ),
+    );
+    _titleController.clear();
+    _descriptionController.clear();
+    Navigator.pop(context);
   }
 
-  void saveTask() {
-    setState(() {
-      taskList.add([_controller.text, false]);
-      _controller.clear();
-      Navigator.pop(context);
-    });
-  }
-
-  void deleteTask(int index) {
-    setState(() {
-      taskList.removeAt(index);
-    });
-  }
-
-  void updateTask(int index) {
-    _controller.text = taskList[index][0];
+  void updateTask(BuildContext context, int index) {
+    _titleController.text = _taskController.taskList[index].title;
+    _descriptionController.text = _taskController.taskList[index].description;
     showDialog(
       context: context,
       builder: (context) {
         return DialogWidget(
-          controller: _controller,
+          titleController: _titleController,
+          descriptionController: _descriptionController,
           onSave: () {
-            setState(() {
-              taskList[index][0] = _controller.text;
-              _controller.clear();
-              Navigator.pop(context);
-            });
+            _taskController.updateTask(
+              index,
+              Task(
+                title: _titleController.text,
+                description: _descriptionController.text,
+                creationDate: _taskController.taskList[index].creationDate,
+                isCompleted: _taskController.taskList[index].isCompleted,
+              ),
+            );
+            _titleController.clear();
+            _descriptionController.clear();
+            Navigator.pop(context);
           },
           onCancel: () {
-            _controller.clear();
+            _titleController.clear();
+            _descriptionController.clear();
             Navigator.pop(context);
           },
         );
@@ -63,17 +60,18 @@ class _TasksPageState extends State<TasksPage> {
     );
   }
 
-  void createTask() {
+  void createTask(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
         return DialogWidget(
-          controller: _controller,
+          titleController: _titleController,
+          descriptionController: _descriptionController,
           onSave: () {
-            saveTask();
+            saveTask(context);
           },
           onCancel: () {
-            Navigator.pop(context); 
+            Navigator.pop(context);
           },
         );
       },
@@ -125,7 +123,7 @@ class _TasksPageState extends State<TasksPage> {
             "Hello, Strakins 👋",
             style: TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.bold),
           ),
-          actions: const <Widget> [
+          actions: const <Widget>[
             Padding(
               padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
               child: Icon(Icons.search),
@@ -138,14 +136,14 @@ class _TasksPageState extends State<TasksPage> {
           actionsIconTheme: const IconThemeData(
             size: 25.0,
             color: Colors.white,
-            opacity: 10.0
+            opacity: 10.0,
           ),
           backgroundColor: const Color.fromARGB(255, 28, 95, 107),
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Color.fromARGB(255, 13, 200, 241),
           onPressed: () {
-            createTask();
+            createTask(context);
           },
           child: const Icon(Icons.add),
         ),
@@ -154,16 +152,18 @@ class _TasksPageState extends State<TasksPage> {
             Row(
               children: [
                 Expanded(
-                  child: buildStatCard(
-                    "Total Tasks", 
-                    totalTasks, Colors.blue
-                  ),
+                  child: Obx(() => buildStatCard(
+                        "Total Tasks",
+                        _taskController.totalTasks,
+                        Colors.blue,
+                      )),
                 ),
                 Expanded(
-                  child: buildStatCard(
-                    "Completed Tasks", 
-                    completedTasks, Color.fromARGB(255, 235, 125, 117)
-                  ),
+                  child: Obx(() => buildStatCard(
+                        "Completed Tasks",
+                        _taskController.completedTasks,
+                        Color.fromARGB(255, 235, 125, 117),
+                      )),
                 ),
               ],
             ),
@@ -174,20 +174,24 @@ class _TasksPageState extends State<TasksPage> {
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
             ),
-
             Expanded(
-              child: ListView.builder(
-                itemCount: taskList.length,
-                itemBuilder: (context, index) {
-                  return TaskCard(
-                    taskName: taskList[index][0],
-                    taskCompleted: taskList[index][1],
-                    onChanged: (value) => taskCompleted(value, index),
-                    onDelete: (context) => deleteTask(index),
-                    onEdit: (context) => updateTask(index),
-                  );
-                },
-              ),
+              child: Obx(() => ListView.builder(
+                    itemCount: _taskController.taskList.length,
+                    itemBuilder: (context, index) {
+                      return TaskCard(
+                        task: _taskController.taskList[index],
+                        onChanged: (value) {
+                          _taskController.toggleTaskCompletion(index);
+                        },
+                        onDelete: () {
+                          _taskController.deleteTask(index);
+                        },
+                        onEdit: () {
+                          updateTask(context, index);
+                        },
+                      );
+                    },
+                  )),
             ),
           ],
         ),
@@ -196,136 +200,3 @@ class _TasksPageState extends State<TasksPage> {
   }
 }
 
-
-
-// import 'package:flutter/material.dart';
-// import 'package:tasklist/components/dialogue_widget.dart';
-// import 'package:tasklist/components/taskwidget_card.dart';
-
-// class TasksPage extends StatefulWidget {
-//   const TasksPage({super.key});
-
-//   @override
-//   State<TasksPage> createState() => _TasksPageState();
-// }
-
-// class _TasksPageState extends State<TasksPage> {
-//   final _controller = TextEditingController();
-//   List taskList = [
-//     ["Task 1", false],
-//     ["Task 2", true],
-//     ["Task 3", false],
-//   ];
-
-//   void taskCompleted(bool? value, int index) {
-//     setState(() {
-//       taskList[index][1] = !taskList[index][1];
-//     });
-//   }
-
-//   void saveTask() {
-//     setState(() {
-//       taskList.add([_controller.text, false]);
-//       _controller.clear();
-//       Navigator.pop(context);
-//     });
-//   }
-
-//   void deleteTask(int index) {
-//     setState(() {
-//       taskList.removeAt(index);
-//     });
-//   }
-
-//   void updateTask(int index) {
-//     _controller.text = taskList[index][0];
-//     showDialog(
-//       context: context,
-//       builder: (context) {
-//         return DialogWidget(
-//           controller: _controller,
-//           onSave: () {
-//             setState(() {
-//               taskList[index][0] = _controller.text;
-//               _controller.clear();
-//               Navigator.pop(context);
-//             });
-//           },
-//           onCancel: () {
-//             _controller.clear();
-//             Navigator.pop(context);
-//           },
-//         );
-//       },
-//     );
-//   }
-
-//   void createTask() {
-//     showDialog(
-//       context: context,
-//       builder: (context) {
-//         return DialogWidget(
-//           controller: _controller,
-//           onSave: () {
-//             saveTask();
-//           },
-//           onCancel: () {
-//             Navigator.pop(context); 
-//           },
-//         );
-//       },
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SafeArea(
-//       child: Scaffold(
-//           backgroundColor: const Color.fromARGB(255, 27, 133, 151),
-//           appBar: AppBar(
-//             title: const Text(
-//                   "Hello, Strakins 👋",
-//                   style: TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.bold),
-//             ),
-//             actions: const <Widget> [
-//                Padding(
-//                  padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
-//                  child: Icon(Icons.search),
-//                ),
-//                Padding(
-//                  padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
-//                  child: Icon(Icons.notifications),
-//                ),
-//             ],
-//             actionsIconTheme: const IconThemeData(
-//               size: 25.0,
-//               color: Colors.white,
-//               opacity: 10.0
-//             ),
-//             backgroundColor: const Color.fromARGB(255, 28, 95, 107),
-//           ),
-
-//           floatingActionButton: FloatingActionButton(
-//             backgroundColor: Color.fromARGB(255, 13, 200, 241),
-//             onPressed: () {
-//               createTask();
-//             },
-//             child: const Icon(Icons.add),
-//           ),
-//           body: ListView.builder(
-//                   itemCount: taskList.length,
-//                   itemBuilder: (context, index) {
-//                     return TaskCard(
-//                       taskName: taskList[index][0],
-//                       taskCompleted: taskList[index][1],
-//                       onChanged: (value) => taskCompleted(value, index),
-//                       onDelete: (value) =>  deleteTask(index),
-//                       onEdit: (value) => updateTask(index), // Add an edit callback
-//                     );
-//                   },
-            
-//           )
-//         ),
-//     );
-//   }
-// }

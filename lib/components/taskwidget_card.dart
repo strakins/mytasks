@@ -1,59 +1,50 @@
+// taskwidget_card.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:tasklist/models/task_model.dart';
 
 class TaskCard extends StatelessWidget {
-  const TaskCard({
-    super.key,
-    required this.taskName,
-    required this.taskCompleted,
-    this.onChanged,
-    this.onDelete,
-    this.onEdit, // Add onEdit callback
-  });
+  final Task task;
+  final ValueChanged<bool?> onChanged;
+  final VoidCallback onDelete;
+  final VoidCallback onEdit;
 
-  final String taskName;
-  final bool taskCompleted;
-  final Function(bool?)? onChanged;
-  final void Function(BuildContext)? onDelete;
-  final void Function(BuildContext)? onEdit; // Add onEdit callback
+  const TaskCard({
+    required this.task,
+    required this.onChanged,
+    required this.onDelete,
+    required this.onEdit,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-      child: Slidable(
-        endActionPane: ActionPane(
-          motion: StretchMotion(), 
+    return Card(
+      margin: const EdgeInsets.all(8.0),
+      child: ListTile(
+        title: Text(task.title),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SlidableAction(
-              onPressed: onDelete,
-              icon: Icons.delete_forever_outlined,
-              backgroundColor: Colors.red,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            SlidableAction(
-              onPressed: onEdit,
-              icon: Icons.edit,
-              backgroundColor: Colors.blue,
-              borderRadius: BorderRadius.circular(8.0),
-            )
-          ]
+            Text(task.description),
+            Text('${task.creationDate.day} - ${task.creationDate.month} - ${task.creationDate.year}'),
+          ],
         ),
-        child: Container(
-          
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: ListTile(
-            // onTap: () => onEdit,
-            leading: Checkbox(
-              value: taskCompleted,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Checkbox(
+              value: task.isCompleted,
               onChanged: onChanged,
-              activeColor: const Color.fromARGB(255, 222, 51, 39),
             ),
-            title: Text(taskName),         
-          ),
+            IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: onEdit,
+            ),
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: onDelete,
+            ),
+          ],
         ),
       ),
     );
@@ -62,55 +53,3 @@ class TaskCard extends StatelessWidget {
 
 
 
-// import 'package:flutter/material.dart';
-// import 'package:flutter_slidable/flutter_slidable.dart';
-
-// class TaskCard extends StatelessWidget {
-//   const TaskCard({
-//     super.key,
-//     required this.taskName,
-//     required this.taskCompleted,
-//     this.onChanged,
-//     this.onDelete,
-//   });
-
-//   final String taskName;
-//   final bool taskCompleted;
-//   final Function(bool?)? onChanged;
-//   final void Function(BuildContext)? onDelete;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-//       child: Slidable(
-//         endActionPane: ActionPane(
-//           motion: StretchMotion(), 
-//           children: [
-//             SlidableAction(
-//               onPressed: onDelete,
-//               icon: Icons.delete_forever_outlined,
-//               backgroundColor: Colors.red,
-//               borderRadius: BorderRadius.circular(8.0),
-//             )
-//           ]
-//         ),
-//         child: Container(
-//           decoration: BoxDecoration(
-//             color: Colors.white,
-//             borderRadius: BorderRadius.circular(8.0),
-//           ),
-//           child: ListTile(
-//             leading: Checkbox(
-//               value: taskCompleted,
-//               onChanged: onChanged,
-//               activeColor: const Color.fromARGB(255, 222, 51, 39),
-//             ),
-//             title: Text(taskName),         
-                   
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class DialogButton extends StatelessWidget {
+  final String buttonName;
+  final VoidCallback? onPressed;
+
   const DialogButton({
-    super.key,
-    required this.buttonname,
+    Key? key,
+    required this.buttonName,
     this.onPressed,
-
-  });
-
-  final String buttonname;
-  final Function()? onPressed;
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+      padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
       child: MaterialButton(
         onPressed: onPressed,
-        color: Theme.of(context).primaryColor,
+        color: Get.theme.primaryColor,
         child: Text(
-          buttonname,
+          buttonName,
           style: const TextStyle(color: Colors.white),
         ),
       ),
