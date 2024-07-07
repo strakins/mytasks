@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'Daily Task Checklist',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        textTheme: GoogleFonts.acmeTextTheme(),
+        textTheme: GoogleFonts.robotoTextTheme(),
       ),
       home: LandingPageNavs(),
       debugShowCheckedModeBanner: false,
